@@ -8,8 +8,8 @@
       "forceConsistentCasingInFileNames": true,
       "skipLibCheck": true,
       "strict": false,
-      "types": ["node"]
+      "types": ["node", "jest"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "tests/**/*"],
   "exclude": ["node_modules", "dist"]
 }
