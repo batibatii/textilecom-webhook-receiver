@@ -1,0 +1,8 @@
+.husky
+.git
+node_modules
+coverage
+dist
+*.log
+.env
+.env.local
