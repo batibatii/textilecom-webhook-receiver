@@ -1,3 +1,4 @@
+import './common/env'
 import express from 'express'
 import type { Request, Response } from 'express'
 import cors from 'cors'
@@ -5,9 +6,7 @@ import helmet from 'helmet'
 import compression from 'compression'
 import userRoutes from './common/routes'
 import unknownEndpoint from './middlewares/unknownEndpoint'
-import dotenv from 'dotenv'
-
-dotenv.config()
+import webHooksController from '../src/resources/stripe/webhooks/controller'
 
 const app = express()
 
@@ -22,6 +21,10 @@ app.use(
     limit: process.env.REQUEST_LIMIT || '100kb',
   }),
 )
+
+// https://github.com/stripe/stripe-node/issues/341
+app.post('/v1/stripe/webhooks', (express.raw({ type: 'application/json' }), webHooksController.receiveUpdates))
+
 app.use(express.json())
 
 // health check
@@ -33,7 +36,6 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/v1/', userRoutes)
 
-// Handle unknown endpoints
 app.use('*', unknownEndpoint)
 
 export default app
