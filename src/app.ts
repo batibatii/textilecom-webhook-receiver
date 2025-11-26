@@ -6,6 +6,7 @@ import helmet from 'helmet'
 import compression from 'compression'
 import userRoutes from './common/routes'
 import unknownEndpoint from './middlewares/unknownEndpoint'
+import errorHandler from './middlewares/errorHandler'
 import webHooksController from '../src/resources/stripe/webhooks/controller'
 
 const app = express()
@@ -23,7 +24,7 @@ app.use(
 )
 
 // https://github.com/stripe/stripe-node/issues/341
-app.post('/v1/stripe/webhooks', (express.raw({ type: 'application/json' }), webHooksController.receiveUpdates))
+app.post('/v1/stripe/webhooks', express.raw({ type: 'application/json' }), webHooksController.receiveUpdates)
 
 app.use(express.json())
 
@@ -37,5 +38,8 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/v1/', userRoutes)
 
 app.use('*', unknownEndpoint)
+
+// Global error handler - must be last
+app.use(errorHandler)
 
 export default app
