@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
 import { stripe, endpointSecret } from '../../../services/stripe'
 import logger from '../../../common/logger'
+import { StripeCheckoutSessionSchema } from '../../../types/stripeValidation'
+import { ZodError } from 'zod'
 
 const receiveUpdates = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -16,7 +18,6 @@ const receiveUpdates = async (req: Request, res: Response, next: NextFunction) =
       return res.status(400).json({ error: 'Missing signature' })
     }
 
-    // Verify the webhook signature
     let event
     try {
       event = stripe.webhooks.constructEvent(req.body, signature, endpointSecret)
@@ -28,14 +29,34 @@ const receiveUpdates = async (req: Request, res: Response, next: NextFunction) =
 
     logger.info({ eventType: event.type, eventId: event.id }, 'Processing Stripe webhook event')
 
-    // Process the event
     try {
       switch (event.type) {
         case 'checkout.session.completed': {
           const checkoutSession = event.data.object
-          logger.info({ sessionId: checkoutSession.id }, 'Checkout session completed successfully')
-          // TODO: Define and call a method to handle the successful payment intent
-          // await handlePaymentIntentSucceeded(checkoutSession);
+
+          try {
+            const validatedSession = StripeCheckoutSessionSchema.parse(checkoutSession)
+            logger.info(
+              { sessionId: validatedSession.id, userId: validatedSession.metadata?.userId },
+              'Checkout session completed successfully',
+            )
+
+            if (!validatedSession.metadata?.userId) {
+              throw new Error('User ID not found in session metadata')
+            }
+
+            // TODO: Define and call a method to handle the successful payment intent
+            // await handleCheckoutSessionCompleted(validatedSession);
+          } catch (validationError) {
+            if (validationError instanceof ZodError) {
+              logger.error(
+                { errors: validationError.issues, sessionId: checkoutSession.id },
+                'Checkout session validation failed',
+              )
+              throw new Error('Invalid checkout session structure')
+            }
+            throw validationError
+          }
           break
         }
         case 'checkout.session.expired': {
