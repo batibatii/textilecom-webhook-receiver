@@ -3,6 +3,7 @@ import { stripe, endpointSecret } from '../../../services/stripe'
 import logger from '../../../common/logger'
 import { StripeCheckoutSessionSchema } from '../../../types/stripeValidation'
 import { ZodError } from 'zod'
+import { handleCheckoutSessionCompleted } from '../../../services/checkoutHandler'
 
 const receiveUpdates = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -45,8 +46,7 @@ const receiveUpdates = async (req: Request, res: Response, next: NextFunction) =
               throw new Error('User ID not found in session metadata')
             }
 
-            // TODO: Define and call a method to handle the successful payment intent
-            // await handleCheckoutSessionCompleted(validatedSession);
+            await handleCheckoutSessionCompleted(validatedSession)
           } catch (validationError) {
             if (validationError instanceof ZodError) {
               logger.error(

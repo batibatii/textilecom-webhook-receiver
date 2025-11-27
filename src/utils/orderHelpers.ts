@@ -1,5 +1,9 @@
-// Format: ORD-YYYYMMDD-RRR (RRR = random 3 digits)
+// Constants for ID generation
+const BASE36_RADIX = 36
+const RANDOM_ID_START = 2
+const RANDOM_ID_LENGTH = 9
 
+// Format: ORD-YYYYMMDD-RRR (RRR = random 3 digits)
 export function generateOrderNumber(): string {
   const date = new Date()
   const year = date.getFullYear()
@@ -10,6 +14,15 @@ export function generateOrderNumber(): string {
     .padStart(3, '0')
 
   return `ORD-${year}${month}${day}-${random}`
+}
+
+// Format: order_{timestamp}_{randomString}
+export function generateOrderId(): string {
+  const timestamp = Date.now()
+  const randomString = Math.random()
+    .toString(BASE36_RADIX)
+    .slice(RANDOM_ID_START, RANDOM_ID_START + RANDOM_ID_LENGTH)
+  return `order_${timestamp}_${randomString}`
 }
 
 export function calculateOrderItemTotals(item: {
