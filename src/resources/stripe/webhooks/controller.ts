@@ -4,6 +4,7 @@ import logger from '../../../common/logger'
 import { StripeCheckoutSessionSchema } from '../../../types/stripeValidation'
 import { ZodError } from 'zod'
 import { handleCheckoutSessionCompleted } from '../../../services/checkoutHandler'
+import { handleCheckoutSessionExpired } from '../../../services/expiredSessionHandler'
 
 const receiveUpdates = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -61,9 +62,25 @@ const receiveUpdates = async (req: Request, res: Response, next: NextFunction) =
         }
         case 'checkout.session.expired': {
           const checkoutSession = event.data.object
-          logger.info({ sessionId: checkoutSession.id }, 'Checkout session expired')
-          // TODO: Define and call a method to handle the expired session
-          // await handleCheckoutSessionExpired(checkoutSession);
+
+          try {
+            const validatedSession = StripeCheckoutSessionSchema.parse(checkoutSession)
+            logger.info(
+              { sessionId: validatedSession.id, userId: validatedSession.metadata?.userId },
+              'Processing expired checkout session',
+            )
+
+            await handleCheckoutSessionExpired(validatedSession)
+          } catch (validationError) {
+            if (validationError instanceof ZodError) {
+              logger.error(
+                { errors: validationError.issues, sessionId: checkoutSession.id },
+                'Expired session validation failed',
+              )
+              throw new Error('Invalid expired session structure')
+            }
+            throw validationError
+          }
           break
         }
         default: {

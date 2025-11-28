@@ -4,7 +4,6 @@ import type { Request, Response } from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import compression from 'compression'
-import userRoutes from './common/routes'
 import unknownEndpoint from './middlewares/unknownEndpoint'
 import errorHandler from './middlewares/errorHandler'
 import webHooksController from '../src/resources/stripe/webhooks/controller'
@@ -34,8 +33,6 @@ app.get('/', (req: Request, res: Response) => {
     'health-check': 'This is working!',
   })
 })
-
-app.use('/v1/', userRoutes)
 
 app.use('*', unknownEndpoint)
 
