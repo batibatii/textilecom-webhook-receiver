@@ -20,32 +20,23 @@ export async function handleCheckoutSessionCompleted(session: {
   }
 }): Promise<void> {
   try {
-    logger.info({ sessionId: session.id, userId: session.metadata.userId }, 'Starting checkout session processing')
-
     // Check for idempotency - prevent duplicate order creation
-    logger.info({ sessionId: session.id }, 'Checking for existing order')
     const existingOrder = await getOrderByStripeSessionId(session.id)
     if (existingOrder) {
       logger.info({ sessionId: session.id, orderId: existingOrder.id }, 'Order already exists for this session')
       return
     }
-    logger.info({ sessionId: session.id }, 'No existing order found, proceeding with order creation')
 
     // Thanks to this expand parameter, line items and product details are included
-    logger.info({ sessionId: session.id }, 'Retrieving full session from Stripe')
     const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
       expand: ['line_items.data.price.product'],
     })
-    logger.info({ sessionId: session.id, lineItemsCount: fullSession.line_items?.data?.length || 0 }, 'Full session retrieved')
 
     const lineItems = fullSession.line_items?.data || []
 
     if (lineItems.length === 0) {
-      logger.error({ sessionId: session.id }, 'No line items found in checkout session')
       throw new Error('No line items found in checkout session')
     }
-
-    logger.info({ sessionId: session.id, lineItemsCount: lineItems.length }, 'Processing line items')
 
     // Build order items from Stripe line items
     const orderItems: OrderItem[] = []
@@ -104,15 +95,11 @@ export async function handleCheckoutSessionCompleted(session: {
     }
 
     if (orderItems.length === 0) {
-      logger.error({ sessionId: session.id }, 'No valid order items could be created from line items')
       throw new Error('No valid order items could be created from line items')
     }
 
-    logger.info({ sessionId: session.id, orderItemsCount: orderItems.length }, 'Order items built successfully')
-
     const currency = orderItems[0].price.currency
     const orderTotals = calculateOrderTotals(orderItems, currency)
-    logger.info({ sessionId: session.id, totals: orderTotals }, 'Order totals calculated')
 
     const paidAmount = (fullSession.amount_total || 0) / 100
     const calculatedTotal = orderTotals.total
@@ -181,27 +168,20 @@ export async function handleCheckoutSessionCompleted(session: {
       paymentCompletedAt: now,
     }
 
-    logger.info({ sessionId: session.id, orderId, orderNumber }, 'Order object created, saving to Firestore')
-
     // Create order in Firestore
     await createOrder(order)
-    logger.info({ sessionId: session.id, orderId, orderNumber }, 'Order saved to Firestore successfully')
 
     const stockUpdates = orderItems.map((item) => ({
       productId: item.productId,
       quantity: item.quantity,
     }))
 
-    logger.info({ sessionId: session.id, stockUpdates }, 'Decrementing product stock')
     await decrementMultipleProductsStock(stockUpdates)
-    logger.info({ sessionId: session.id }, 'Product stock decremented successfully')
 
-    logger.info({ sessionId: session.id, userId: session.metadata.userId }, 'Deleting cart')
     await deleteCart(session.metadata.userId)
-    logger.info({ sessionId: session.id, userId: session.metadata.userId }, 'Cart deleted successfully')
 
+    // Send order confirmation email
     try {
-      logger.info({ orderId: order.id, email: order.customerInfo.email }, 'Sending order confirmation email')
       await sendOrderConfirmationEmail({ order })
       logger.info({ orderId: order.id, email: order.customerInfo.email }, 'Order confirmation email sent successfully')
     } catch (emailError) {
