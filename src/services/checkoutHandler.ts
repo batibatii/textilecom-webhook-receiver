@@ -128,24 +128,38 @@ export async function handleCheckoutSessionCompleted(session: {
       )
     }
 
-    const customerInfo = {
+    const customerInfo: any = {
       email: session.customer_email || fullSession.customer_details?.email || '',
-      name: fullSession.customer_details?.name || undefined,
-      phone: fullSession.customer_details?.phone || undefined,
-      address:
-        fullSession.customer_details?.address &&
-        fullSession.customer_details.address.line1 &&
-        fullSession.customer_details.address.city &&
-        fullSession.customer_details.address.postal_code &&
-        fullSession.customer_details.address.country
-          ? {
-              line1: fullSession.customer_details.address.line1,
-              line2: fullSession.customer_details.address.line2 || undefined,
-              city: fullSession.customer_details.address.city,
-              postalCode: fullSession.customer_details.address.postal_code,
-              country: fullSession.customer_details.address.country,
-            }
-          : undefined,
+    }
+
+    // Only add optional fields if they have values (Firestore doesn't accept undefined)
+    if (fullSession.customer_details?.name) {
+      customerInfo.name = fullSession.customer_details.name
+    }
+
+    if (fullSession.customer_details?.phone) {
+      customerInfo.phone = fullSession.customer_details.phone
+    }
+
+    // Only add address if all required fields are present
+    if (
+      fullSession.customer_details?.address &&
+      fullSession.customer_details.address.line1 &&
+      fullSession.customer_details.address.city &&
+      fullSession.customer_details.address.postal_code &&
+      fullSession.customer_details.address.country
+    ) {
+      customerInfo.address = {
+        line1: fullSession.customer_details.address.line1,
+        city: fullSession.customer_details.address.city,
+        postalCode: fullSession.customer_details.address.postal_code,
+        country: fullSession.customer_details.address.country,
+      }
+
+      // Only add line2 if it exists
+      if (fullSession.customer_details.address.line2) {
+        customerInfo.address.line2 = fullSession.customer_details.address.line2
+      }
     }
 
     const orderNumber = generateOrderNumber()
