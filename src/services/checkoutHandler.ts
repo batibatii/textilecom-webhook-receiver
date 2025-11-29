@@ -38,6 +38,19 @@ export async function handleCheckoutSessionCompleted(session: {
       throw new Error('No line items found in checkout session')
     }
 
+    // Parse cart items from session metadata to get size information
+    let cartItemsMap: Map<string, { size?: string }> = new Map()
+    if (session.metadata.cartItems) {
+      try {
+        const cartItems = JSON.parse(session.metadata.cartItems)
+        cartItems.forEach((item: { productId: string; size?: string; stripePriceId: string }) => {
+          cartItemsMap.set(item.stripePriceId, { size: item.size })
+        })
+      } catch (error) {
+        logger.warn({ error }, 'Failed to parse cartItems from session metadata')
+      }
+    }
+
     // Build order items from Stripe line items
     const orderItems: OrderItem[] = []
 
@@ -73,6 +86,10 @@ export async function handleCheckoutSessionCompleted(session: {
         taxRate,
       })
 
+      // Get size from cart items metadata
+      const cartItemData = cartItemsMap.get(price.id)
+      const size = cartItemData?.size
+
       const orderItem: OrderItem = {
         productId,
         title: product.name,
@@ -82,7 +99,7 @@ export async function handleCheckoutSessionCompleted(session: {
           currency,
         },
         discount: discountRate > 0 ? { rate: discountRate } : null,
-        size: item.description || undefined,
+        size,
         quantity,
         image: product.images[0] || '',
         taxRate,
