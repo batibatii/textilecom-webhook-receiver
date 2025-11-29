@@ -52,15 +52,26 @@ function generateOrderConfirmationHTML(order: Order): string {
       <td style="padding: 32px 16px;">
         <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #eaeaea;">
 
-          <!-- Success Icon & Header -->
+          <!-- Logo & Success Icon & Header -->
           <tr>
             <td style="padding: 48px 32px 32px 32px; text-align: center;">
-              <div style="margin: 0 auto 24px auto; width: 64px; height: 64px; background-color: #dcfce7; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
+              <!-- Logo -->
+              <div style="margin-bottom: 32px;">
+                <h1 style="margin: 0; color: #1a1a1a; font-size: 28px; font-weight: 700; font-family: 'Playfair Display', serif; letter-spacing: 2px;">TEXTILECOM</h1>
               </div>
-              <h1 style="margin: 0; color: #1a1a1a; font-size: 24px; font-weight: 600; font-family: 'Playfair Display', serif; letter-spacing: -0.3px;">Thank You for Your Purchase</h1>
+
+              <!-- Success Checkmark -->
+              <table style="margin: 0 auto 24px auto;">
+                <tr>
+                  <td style="width: 64px; height: 64px; background-color: #dcfce7; border-radius: 50%; text-align: center; vertical-align: middle;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </td>
+                </tr>
+              </table>
+
+              <h2 style="margin: 0; color: #1a1a1a; font-size: 24px; font-weight: 600; font-family: 'Playfair Display', serif; letter-spacing: -0.3px;">Thank You for Your Purchase</h2>
             </td>
           </tr>
 

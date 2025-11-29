@@ -24,10 +24,15 @@ function generateAbandonedCartHTML(data: AbandonedCartEmailData): string {
       <td style="padding: 32px 16px;">
         <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #eaeaea;">
 
-          <!-- Header -->
+          <!-- Logo & Header -->
           <tr>
             <td style="padding: 48px 32px 32px 32px; text-align: center;">
-              <h1 style="margin: 0 0 16px 0; color: #1a1a1a; font-size: 24px; font-weight: 600; font-family: 'Playfair Display', serif; letter-spacing: -0.3px;">You Left Items in Your Cart</h1>
+              <!-- Logo -->
+              <div style="margin-bottom: 32px;">
+                <h1 style="margin: 0; color: #1a1a1a; font-size: 28px; font-weight: 700; font-family: 'Playfair Display', serif; letter-spacing: 2px;">TEXTILECOM</h1>
+              </div>
+
+              <h2 style="margin: 0 0 16px 0; color: #1a1a1a; font-size: 24px; font-weight: 600; font-family: 'Playfair Display', serif; letter-spacing: -0.3px;">You Left Items in Your Cart</h2>
               <p style="margin: 0; font-size: 14px; color: #737373; line-height: 1.6; font-family: 'Merriweather', serif; font-weight: 300;">
                 Complete your purchase before your items are gone.
               </p>
