@@ -6,6 +6,7 @@ import { generateOrderNumber } from '../utils/orderHelpers'
 import { calculateOrderItemTotals, calculateOrderTotals, generateOrderId } from '../utils/orderHelpers'
 import { decrementMultipleProductsStock } from './products'
 import { deleteCart } from './cart'
+import { sendOrderConfirmationEmail } from './email/templates/orderConfirmation'
 import logger from '../common/logger'
 
 export async function handleCheckoutSessionCompleted(session: {
@@ -159,6 +160,14 @@ export async function handleCheckoutSessionCompleted(session: {
 
     await deleteCart(session.metadata.userId)
 
+    try {
+      await sendOrderConfirmationEmail({ order })
+      logger.info({ orderId: order.id, email: order.customerInfo.email }, 'Order confirmation email sent successfully')
+    } catch (emailError) {
+      // Log error but don't fail the order creation
+      logger.error({ err: emailError, orderId: order.id, email: order.customerInfo.email }, 'Failed to send order confirmation email')
+    }
+
     logger.info(
       {
         orderId: order.id,
@@ -168,7 +177,7 @@ export async function handleCheckoutSessionCompleted(session: {
         currency: orderTotals.currency,
         itemCount: orderItems.length,
       },
-      'Checkout session processed successfully - order created, stock decremented, and cart cleared',
+      'Checkout session processed successfully - order created, stock decremented, cart cleared, and email sent',
     )
   } catch (error) {
     logger.error({ err: error, sessionId: session.id }, 'Failed to handle checkout session')
