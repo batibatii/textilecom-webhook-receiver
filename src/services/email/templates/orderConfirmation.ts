@@ -11,22 +11,25 @@ function generateOrderConfirmationHTML(order: Order): string {
     .map(
       (item) => `
     <tr>
-      <td style="padding: 15px; border-bottom: 1px solid #eee;">
-        <img src="${item.image}" alt="${item.title}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;" />
+      <td style="padding: 16px; border-bottom: 1px solid #eaeaea;">
+        <table cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="padding-right: 12px;">
+              <img src="${item.image}" alt="${item.title}" style="width: 64px; height: 64px; object-fit: cover; display: block;" />
+            </td>
+            <td style="vertical-align: top;">
+              <div style="font-weight: 400; font-size: 13px; color: #1a1a1a; margin-bottom: 4px; font-family: 'Merriweather', serif; letter-spacing: 0.3px;">${item.title.toUpperCase()}</div>
+              <div style="font-size: 12px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">${item.brand}</div>
+              ${item.size ? `<div style="font-size: 12px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">Size: ${item.size}</div>` : ''}
+              ${item.discount && item.discount.rate > 0 ? `<div style="font-size: 12px; color: #166534; background-color: #dcfce7; display: inline-block; padding: 2px 6px; margin-top: 4px; font-family: 'Merriweather', serif; font-weight: 400;">-${item.discount.rate}% OFF</div>` : ''}
+            </td>
+          </tr>
+        </table>
       </td>
-      <td style="padding: 15px; border-bottom: 1px solid #eee;">
-        <div style="font-weight: 600; color: #333; margin-bottom: 4px; font-family: 'Merriweather', serif;">${item.title}</div>
-        <div style="font-size: 14px; color: #666; font-family: 'Merriweather', serif;">${item.brand}</div>
-        ${item.size ? `<div style="font-size: 14px; color: #666; font-family: 'Merriweather', serif;">Size: ${item.size}</div>` : ''}
-        ${item.discount && item.discount.rate > 0 ? `<div style="font-size: 14px; color: #e74c3c; font-family: 'Merriweather', serif;">-${item.discount.rate}% off</div>` : ''}
-      </td>
-      <td style="padding: 15px; border-bottom: 1px solid #eee; text-align: center; font-family: 'Merriweather', serif;">
+      <td style="padding: 16px; border-bottom: 1px solid #eaeaea; text-align: center; font-size: 13px; color: #1a1a1a; font-family: 'Merriweather', serif; font-weight: 300;">
         ${item.quantity}
       </td>
-      <td style="padding: 15px; border-bottom: 1px solid #eee; text-align: right; font-family: 'Merriweather', serif;">
-        ${formatCurrency(item.price.amount, item.price.currency)}
-      </td>
-      <td style="padding: 15px; border-bottom: 1px solid #eee; text-align: right; font-weight: 600; font-family: 'Merriweather', serif;">
+      <td style="padding: 16px; border-bottom: 1px solid #eaeaea; text-align: right; font-size: 13px; color: #1a1a1a; font-family: 'Merriweather', serif; font-weight: 400;">
         ${formatCurrency(item.total, order.totals.currency)}
       </td>
     </tr>
@@ -41,85 +44,39 @@ function generateOrderConfirmationHTML(order: Order): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Order Confirmation</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Merriweather:wght@300;400;700&display=swap');
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Merriweather', serif; background-color: #f5f5f5;">
+<body style="margin: 0; padding: 0; font-family: 'Merriweather', serif; background-color: #fafafa; -webkit-font-smoothing: antialiased;">
   <table role="presentation" style="width: 100%; border-collapse: collapse;">
     <tr>
-      <td style="padding: 40px 20px;">
-        <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <td style="padding: 32px 16px;">
+        <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #eaeaea;">
 
-          <!-- Header -->
+          <!-- Success Icon & Header -->
           <tr>
-            <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; font-family: 'Playfair Display', serif;">Thank You for Your Order! 🎉</h1>
+            <td style="padding: 48px 32px 32px 32px; text-align: center;">
+              <div style="margin: 0 auto 24px auto; width: 64px; height: 64px; background-color: #dcfce7; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <h1 style="margin: 0; color: #1a1a1a; font-size: 24px; font-weight: 600; font-family: 'Playfair Display', serif; letter-spacing: -0.3px;">Thank You for Your Purchase</h1>
             </td>
           </tr>
 
-          <!-- Order Info -->
+          <!-- Order Info Card -->
           <tr>
-            <td style="padding: 30px;">
-              <div style="background-color: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; margin-bottom: 30px; border-radius: 4px;">
-                <p style="margin: 0 0 8px 0; font-size: 14px; color: #666; font-family: 'Merriweather', serif;">Order Number</p>
-                <p style="margin: 0; font-size: 20px; font-weight: 700; color: #333; font-family: 'Playfair Display', serif;">${order.orderNumber}</p>
-                <p style="margin: 12px 0 0 0; font-size: 14px; color: #666; font-family: 'Merriweather', serif;">Order Date: ${orderDate}</p>
+            <td style="padding: 0 32px 32px 32px;">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <p style="margin: 0 0 4px 0; font-size: 16px; font-weight: 400; color: #1a1a1a; font-family: 'Merriweather', serif;">Order ${order.orderNumber}</p>
+                <p style="margin: 0; font-size: 12px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">Placed on ${orderDate}</p>
+                <p style="margin: 8px 0 0 0; font-size: 12px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">A confirmation email has been sent to ${order.customerInfo.email}</p>
               </div>
-
-              <!-- Customer Info -->
-              <div style="margin-bottom: 30px;">
-                <h2 style="font-size: 18px; font-weight: 600; color: #333; margin: 0 0 15px 0; font-family: 'Playfair Display', serif;">Customer Information</h2>
-                <table style="width: 100%; border-collapse: collapse;">
-                  <tr>
-                    <td style="padding: 8px 0; color: #666; font-size: 14px; width: 30%; font-family: 'Merriweather', serif;">Name:</td>
-                    <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: 500; font-family: 'Merriweather', serif;">${order.customerInfo.name || 'N/A'}</td>
-                  </tr>
-                  <tr>
-                    <td style="padding: 8px 0; color: #666; font-size: 14px; font-family: 'Merriweather', serif;">Email:</td>
-                    <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: 500; font-family: 'Merriweather', serif;">${order.customerInfo.email}</td>
-                  </tr>
-                  ${
-                    order.customerInfo.phone
-                      ? `
-                  <tr>
-                    <td style="padding: 8px 0; color: #666; font-size: 14px; font-family: 'Merriweather', serif;">Phone:</td>
-                    <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: 500; font-family: 'Merriweather', serif;">${order.customerInfo.phone}</td>
-                  </tr>
-                  `
-                      : ''
-                  }
-                </table>
-              </div>
-
-              ${
-                hasShippingAddress
-                  ? `
-              <!-- Shipping Address -->
-              <div style="margin-bottom: 30px;">
-                <h2 style="font-size: 18px; font-weight: 600; color: #333; margin: 0 0 15px 0; font-family: 'Playfair Display', serif;">Shipping Address</h2>
-                <div style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; font-size: 14px; color: #333; line-height: 1.6; font-family: 'Merriweather', serif;">
-                  ${formatAddress(order.customerInfo.address!)}
-                </div>
-              </div>
-              `
-                  : ''
-              }
 
               <!-- Order Items -->
-              <div style="margin-bottom: 30px;">
-                <h2 style="font-size: 18px; font-weight: 600; color: #333; margin: 0 0 15px 0; font-family: 'Playfair Display', serif;">Order Details</h2>
-                <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #fff; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
-                  <thead>
-                    <tr style="background-color: #f8f9fa;">
-                      <th style="padding: 12px 15px; text-align: left; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; font-family: 'Merriweather', serif;">Product</th>
-                      <th style="padding: 12px 15px; text-align: left; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; font-family: 'Merriweather', serif;">Details</th>
-                      <th style="padding: 12px 15px; text-align: center; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; font-family: 'Merriweather', serif;">Qty</th>
-                      <th style="padding: 12px 15px; text-align: right; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; font-family: 'Merriweather', serif;">Price</th>
-                      <th style="padding: 12px 15px; text-align: right; font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; font-family: 'Merriweather', serif;">Total</th>
-                    </tr>
-                  </thead>
+              <div style="margin-bottom: 24px; border-top: 1px solid #eaeaea; padding-top: 24px;">
+                <h3 style="font-size: 14px; font-weight: 600; color: #1a1a1a; margin: 0 0 16px 0; font-family: 'Playfair Display', serif; letter-spacing: 0.5px;">ORDER ITEMS</h3>
+                <table role="presentation" style="width: 100%; border-collapse: collapse;">
                   <tbody>
                     ${productRows}
                   </tbody>
@@ -127,27 +84,72 @@ function generateOrderConfirmationHTML(order: Order): string {
               </div>
 
               <!-- Order Summary -->
-              <div style="margin-bottom: 30px;">
-                <table style="width: 100%; max-width: 300px; margin-left: auto;">
+              <div style="margin-bottom: 24px; border-top: 1px solid #eaeaea; padding-top: 24px;">
+                <table style="width: 100%;">
                   <tr>
-                    <td style="padding: 8px 0; font-size: 14px; color: #666; font-family: 'Merriweather', serif;">Subtotal:</td>
-                    <td style="padding: 8px 0; font-size: 14px; color: #333; text-align: right; font-weight: 500; font-family: 'Merriweather', serif;">${formatCurrency(order.totals.subtotal, order.totals.currency)}</td>
+                    <td style="padding: 6px 0; font-size: 13px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">Subtotal</td>
+                    <td style="padding: 6px 0; font-size: 13px; color: #1a1a1a; text-align: right; font-weight: 400; font-family: 'Merriweather', serif;">${formatCurrency(order.totals.subtotal, order.totals.currency)}</td>
                   </tr>
                   <tr>
-                    <td style="padding: 8px 0; font-size: 14px; color: #666; font-family: 'Merriweather', serif;">Tax:</td>
-                    <td style="padding: 8px 0; font-size: 14px; color: #333; text-align: right; font-weight: 500; font-family: 'Merriweather', serif;">${formatCurrency(order.totals.tax, order.totals.currency)}</td>
+                    <td style="padding: 6px 0; font-size: 13px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">Tax</td>
+                    <td style="padding: 6px 0; font-size: 13px; color: #1a1a1a; text-align: right; font-weight: 400; font-family: 'Merriweather', serif;">${formatCurrency(order.totals.tax, order.totals.currency)}</td>
                   </tr>
-                  <tr style="border-top: 2px solid #eee;">
-                    <td style="padding: 12px 0 0 0; font-size: 18px; color: #333; font-weight: 700; font-family: 'Playfair Display', serif;">Total:</td>
-                    <td style="padding: 12px 0 0 0; font-size: 18px; color: #667eea; text-align: right; font-weight: 700; font-family: 'Playfair Display', serif;">${formatCurrency(order.totals.total, order.totals.currency)}</td>
+                  <tr style="border-top: 1px solid #eaeaea;">
+                    <td style="padding: 12px 0 0 0; font-size: 18px; color: #1a1a1a; font-weight: 700; font-family: 'Playfair Display', serif;">Total</td>
+                    <td style="padding: 12px 0 0 0; font-size: 18px; color: #1a1a1a; text-align: right; font-weight: 700; font-family: 'Playfair Display', serif;">${formatCurrency(order.totals.total, order.totals.currency)}</td>
                   </tr>
                 </table>
               </div>
 
+              ${
+                hasShippingAddress
+                  ? `
+              <!-- Shipping Address -->
+              <div style="margin-bottom: 24px; border-top: 1px solid #eaeaea; padding-top: 24px;">
+                <h3 style="font-size: 14px; font-weight: 600; color: #1a1a1a; margin: 0 0 12px 0; font-family: 'Playfair Display', serif; letter-spacing: 0.5px;">SHIPPING ADDRESS</h3>
+                <div style="font-size: 13px; color: #1a1a1a; line-height: 1.6; font-family: 'Merriweather', serif; font-weight: 300;">
+                  ${formatAddress(order.customerInfo.address!)}
+                </div>
+              </div>
+              `
+                  : ''
+              }
+
+              <!-- Customer Info -->
+              <div style="margin-bottom: 24px; border-top: 1px solid #eaeaea; padding-top: 24px;">
+                <h3 style="font-size: 14px; font-weight: 600; color: #1a1a1a; margin: 0 0 12px 0; font-family: 'Playfair Display', serif; letter-spacing: 0.5px;">CUSTOMER INFORMATION</h3>
+                <table style="width: 100%;">
+                  ${
+                    order.customerInfo.name
+                      ? `
+                  <tr>
+                    <td style="padding: 4px 0; font-size: 13px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300; width: 30%;">Name</td>
+                    <td style="padding: 4px 0; font-size: 13px; color: #1a1a1a; font-family: 'Merriweather', serif; font-weight: 400;">${order.customerInfo.name}</td>
+                  </tr>
+                  `
+                      : ''
+                  }
+                  <tr>
+                    <td style="padding: 4px 0; font-size: 13px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">Email</td>
+                    <td style="padding: 4px 0; font-size: 13px; color: #1a1a1a; font-family: 'Merriweather', serif; font-weight: 400;">${order.customerInfo.email}</td>
+                  </tr>
+                  ${
+                    order.customerInfo.phone
+                      ? `
+                  <tr>
+                    <td style="padding: 4px 0; font-size: 13px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">Phone</td>
+                    <td style="padding: 4px 0; font-size: 13px; color: #1a1a1a; font-family: 'Merriweather', serif; font-weight: 400;">${order.customerInfo.phone}</td>
+                  </tr>
+                  `
+                      : ''
+                  }
+                </table>
+              </div>
+
               <!-- Info Box -->
-              <div style="background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; border-radius: 4px;">
-                <p style="margin: 0; font-size: 14px; color: #1976d2; line-height: 1.6; font-family: 'Merriweather', serif;">
-                  <strong>📦 What's Next?</strong><br/>
+              <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 16px; margin-bottom: 24px;">
+                <p style="margin: 0; font-size: 12px; color: #1e40af; line-height: 1.6; font-family: 'Merriweather', serif; font-weight: 400;">
+                  Your order is being prepared<br/>
                   We'll send you a shipping confirmation email with tracking information once your order ships.
                 </p>
               </div>
@@ -156,11 +158,11 @@ function generateOrderConfirmationHTML(order: Order): string {
 
           <!-- Footer -->
           <tr>
-            <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #eee;">
-              <p style="margin: 0 0 10px 0; font-size: 14px; color: #666; font-family: 'Merriweather', serif;">
+            <td style="background-color: #fafafa; padding: 24px 32px; text-align: center; border-top: 1px solid #eaeaea;">
+              <p style="margin: 0 0 8px 0; font-size: 12px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">
                 Questions about your order? Contact our support team.
               </p>
-              <p style="margin: 0; font-size: 12px; color: #999; font-family: 'Merriweather', serif;">
+              <p style="margin: 0; font-size: 11px; color: #a3a3a3; font-family: 'Merriweather', serif; font-weight: 300;">
                 © ${new Date().getFullYear()} TextileCom. All rights reserved.
               </p>
             </td>

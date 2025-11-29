@@ -16,116 +16,107 @@ function generateAbandonedCartHTML(data: AbandonedCartEmailData): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Complete Your Purchase</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Merriweather:wght@300;400;700&display=swap');
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Merriweather', serif; background-color: #f5f5f5;">
+<body style="margin: 0; padding: 0; font-family: 'Merriweather', serif; background-color: #fafafa; -webkit-font-smoothing: antialiased;">
   <table role="presentation" style="width: 100%; border-collapse: collapse;">
     <tr>
-      <td style="padding: 40px 20px;">
-        <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <td style="padding: 32px 16px;">
+        <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #eaeaea;">
 
           <!-- Header -->
           <tr>
-            <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700; font-family: 'Playfair Display', serif;">You Left Items in Your Cart 🛒</h1>
+            <td style="padding: 48px 32px 32px 32px; text-align: center;">
+              <h1 style="margin: 0 0 16px 0; color: #1a1a1a; font-size: 24px; font-weight: 600; font-family: 'Playfair Display', serif; letter-spacing: -0.3px;">You Left Items in Your Cart</h1>
+              <p style="margin: 0; font-size: 14px; color: #737373; line-height: 1.6; font-family: 'Merriweather', serif; font-weight: 300;">
+                Complete your purchase before your items are gone.
+              </p>
             </td>
           </tr>
 
           <!-- Content -->
           <tr>
-            <td style="padding: 40px 30px;">
-              <div style="text-align: center; margin-bottom: 30px;">
-                <p style="margin: 0 0 20px 0; font-size: 18px; color: #333; line-height: 1.6; font-family: 'Merriweather', serif;">
-                  Don't miss out! Complete your purchase before your items are gone.
-                </p>
+            <td style="padding: 0 32px 32px 32px;">
+              ${
+                totalAmount && data.currency
+                  ? `
+              <!-- Cart Total -->
+              <div style="text-align: center; margin-bottom: 32px; padding: 24px; border: 1px solid #eaeaea;">
+                <p style="margin: 0 0 8px 0; font-size: 12px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300; text-transform: uppercase; letter-spacing: 0.5px;">Your Cart Total</p>
+                <p style="margin: 0; font-size: 32px; font-weight: 700; color: #1a1a1a; font-family: 'Playfair Display', serif;">${formatCurrency(totalAmount, data.currency)}</p>
+              </div>
+              `
+                  : ''
+              }
 
-                ${
-                  totalAmount && data.currency
-                    ? `
-                <div style="background-color: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; margin-bottom: 30px; border-radius: 4px; text-align: left;">
-                  <p style="margin: 0 0 8px 0; font-size: 14px; color: #666; font-family: 'Merriweather', serif;">Your Cart Total</p>
-                  <p style="margin: 0; font-size: 32px; font-weight: 700; color: #667eea; font-family: 'Playfair Display', serif;">${formatCurrency(totalAmount, data.currency)}</p>
-                </div>
-                `
-                    : ''
-                }
-
-                <p style="margin: 0 0 30px 0; font-size: 16px; color: #666; line-height: 1.6; font-family: 'Merriweather', serif;">
-                  Your selected items are still waiting for you. Complete your checkout now to secure them!
-                </p>
-
-                <!-- CTA Button -->
+              <!-- CTA Button -->
+              <div style="text-align: center; margin-bottom: 32px;">
                 <table role="presentation" style="margin: 0 auto;">
                   <tr>
-                    <td style="border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0;">
-                      <a href="${cartUrl}" style="display: inline-block; padding: 16px 48px; font-size: 16px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 8px; font-family: 'Playfair Display', serif;">
-                        Complete Your Purchase
+                    <td style="background-color: #1a1a1a; padding: 0;">
+                      <a href="${cartUrl}" style="display: inline-block; padding: 14px 40px; font-size: 11px; font-weight: 400; color: #ffffff; text-decoration: none; font-family: 'Merriweather', serif; letter-spacing: 1px; text-transform: uppercase;">
+                        COMPLETE YOUR PURCHASE
                       </a>
                     </td>
                   </tr>
                 </table>
               </div>
 
-              <!-- Benefits Section -->
-              <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee;">
-                <h2 style="font-size: 20px; font-weight: 600; color: #333; margin: 0 0 20px 0; text-align: center; font-family: 'Playfair Display', serif;">Why Shop With Us?</h2>
+              <!-- Info Box -->
+              <div style="background-color: #fef3c7; border: 1px solid #fbbf24; padding: 16px; margin-bottom: 32px;">
+                <p style="margin: 0; font-size: 12px; color: #78350f; line-height: 1.6; font-family: 'Merriweather', serif; font-weight: 400;">
+                  Don't wait – items in your cart are popular and may sell out soon.
+                </p>
+              </div>
 
-                <table style="width: 100%; margin-bottom: 10px;">
+              <!-- Benefits Section -->
+              <div style="border-top: 1px solid #eaeaea; padding-top: 24px;">
+                <h2 style="font-size: 14px; font-weight: 600; color: #1a1a1a; margin: 0 0 24px 0; text-align: center; font-family: 'Playfair Display', serif; letter-spacing: 0.5px; text-transform: uppercase;">Why Shop With Us</h2>
+
+                <table style="width: 100%;">
                   <tr>
-                    <td style="padding: 12px; width: 50%; vertical-align: top;">
+                    <td style="padding: 16px 8px; width: 50%; vertical-align: top; border-right: 1px solid #eaeaea;">
                       <div style="text-align: center;">
-                        <div style="font-size: 32px; margin-bottom: 8px;">🚚</div>
-                        <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; font-family: 'Playfair Display', serif;">Free Shipping</div>
-                        <div style="font-size: 12px; color: #666; font-family: 'Merriweather', serif;">On orders over $50</div>
+                        <div style="font-size: 11px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; font-family: 'Playfair Display', serif; letter-spacing: 0.5px;">FREE SHIPPING</div>
+                        <div style="font-size: 12px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">On orders over $50</div>
                       </div>
                     </td>
-                    <td style="padding: 12px; width: 50%; vertical-align: top;">
+                    <td style="padding: 16px 8px; width: 50%; vertical-align: top;">
                       <div style="text-align: center;">
-                        <div style="font-size: 32px; margin-bottom: 8px;">🔒</div>
-                        <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; font-family: 'Playfair Display', serif;">Secure Payment</div>
-                        <div style="font-size: 12px; color: #666; font-family: 'Merriweather', serif;">100% secure checkout</div>
+                        <div style="font-size: 11px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; font-family: 'Playfair Display', serif; letter-spacing: 0.5px;">SECURE PAYMENT</div>
+                        <div style="font-size: 12px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">100% secure checkout</div>
                       </div>
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding: 12px; width: 50%; vertical-align: top;">
+                    <td colspan="2" style="padding: 0;"><div style="height: 1px; background-color: #eaeaea;"></div></td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 16px 8px; width: 50%; vertical-align: top; border-right: 1px solid #eaeaea;">
                       <div style="text-align: center;">
-                        <div style="font-size: 32px; margin-bottom: 8px;">↩️</div>
-                        <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; font-family: 'Playfair Display', serif;">Easy Returns</div>
-                        <div style="font-size: 12px; color: #666; font-family: 'Merriweather', serif;">30-day return policy</div>
+                        <div style="font-size: 11px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; font-family: 'Playfair Display', serif; letter-spacing: 0.5px;">EASY RETURNS</div>
+                        <div style="font-size: 12px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">30-day return policy</div>
                       </div>
                     </td>
-                    <td style="padding: 12px; width: 50%; vertical-align: top;">
+                    <td style="padding: 16px 8px; width: 50%; vertical-align: top;">
                       <div style="text-align: center;">
-                        <div style="font-size: 32px; margin-bottom: 8px;">💎</div>
-                        <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; font-family: 'Playfair Display', serif;">Quality Products</div>
-                        <div style="font-size: 12px; color: #666; font-family: 'Merriweather', serif;">Premium materials</div>
+                        <div style="font-size: 11px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; font-family: 'Playfair Display', serif; letter-spacing: 0.5px;">QUALITY PRODUCTS</div>
+                        <div style="font-size: 12px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">Premium materials</div>
                       </div>
                     </td>
                   </tr>
                 </table>
-              </div>
-
-              <!-- Info Box -->
-              <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 4px; margin-top: 30px;">
-                <p style="margin: 0; font-size: 14px; color: #856404; line-height: 1.6; font-family: 'Merriweather', serif;">
-                  <strong>⏰ Don't Wait!</strong><br/>
-                  Items in your cart are popular and may sell out soon. Complete your purchase now to secure them.
-                </p>
               </div>
             </td>
           </tr>
 
           <!-- Footer -->
           <tr>
-            <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #eee;">
-              <p style="margin: 0 0 10px 0; font-size: 14px; color: #666; font-family: 'Merriweather', serif;">
+            <td style="background-color: #fafafa; padding: 24px 32px; text-align: center; border-top: 1px solid #eaeaea;">
+              <p style="margin: 0 0 8px 0; font-size: 12px; color: #737373; font-family: 'Merriweather', serif; font-weight: 300;">
                 Need help? Contact our support team.
               </p>
-              <p style="margin: 0; font-size: 12px; color: #999; font-family: 'Merriweather', serif;">
+              <p style="margin: 0; font-size: 11px; color: #a3a3a3; font-family: 'Merriweather', serif; font-weight: 300;">
                 © ${new Date().getFullYear()} TextileCom. All rights reserved.
               </p>
             </td>
