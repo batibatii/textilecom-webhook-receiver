@@ -88,7 +88,7 @@ export async function handleCheckoutSessionCompleted(session: {
 
       // Get size from cart items metadata
       const cartItemData = cartItemsMap.get(price.id)
-      const size = cartItemData?.size
+      const size = cartItemData?.size || 'One size'
 
       const orderItem: OrderItem = {
         productId,
