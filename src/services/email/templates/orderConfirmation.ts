@@ -61,8 +61,8 @@ function generateOrderConfirmationHTML(order: Order): string {
               </div>
 
               <!-- Success Icon -->
-              <div style="margin-bottom: 24px; font-size: 48px;">
-                🎉
+              <div style="margin-bottom: 24px;">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSIzMiIgY3k9IjMyIiByPSIzMiIgZmlsbD0iI2RjZmNlNyIvPgogIDxwYXRoIGQ9Ik00NCAyMEwyNy41IDM2LjVMMjAgMjkiIHN0cm9rZT0iIzE2YTM0YSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+" alt="Success" width="64" height="64" style="display: block; margin: 0 auto;" />
               </div>
 
               <h2 style="margin: 0; color: #1a1a1a; font-size: 24px; font-weight: 600; font-family: 'Playfair Display', serif; letter-spacing: -0.3px;">Thank You for Your Purchase</h2>
