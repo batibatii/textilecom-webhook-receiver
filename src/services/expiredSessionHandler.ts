@@ -11,7 +11,7 @@ export async function handleCheckoutSessionExpired(session: StripeCheckoutSessio
       {
         sessionId,
         userId,
-        customerEmail: session.customer_email,
+        hasEmail: !!session.customer_email,
         amountTotal: session.amount_total ? session.amount_total / 100 : null,
         currency: session.currency,
       },
@@ -27,10 +27,10 @@ export async function handleCheckoutSessionExpired(session: StripeCheckoutSessio
           amountTotal: session.amount_total,
           currency: session.currency,
         })
-        logger.info({ sessionId, email: session.customer_email }, 'Abandoned cart email sent successfully')
+        logger.info({ sessionId, userId }, 'Abandoned cart email sent successfully')
       } catch (emailError) {
         // Log error but don't fail the webhook processing
-        logger.error({ err: emailError, sessionId, email: session.customer_email }, 'Failed to send abandoned cart email')
+        logger.error({ err: emailError, sessionId, userId }, 'Failed to send abandoned cart email')
       }
     } else {
       logger.info({ sessionId }, 'No customer email available - skipping abandoned cart email')

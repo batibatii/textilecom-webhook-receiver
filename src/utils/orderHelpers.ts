@@ -1,28 +1,16 @@
-// Constants for ID generation
-const BASE36_RADIX = 36
-const RANDOM_ID_START = 2
-const RANDOM_ID_LENGTH = 9
+import { v4 as uuidv4, v7 as uuidv7 } from 'uuid'
 
-// Format: ORD-YYYYMMDD-RRR (RRR = random 3 digits)
-export function generateOrderNumber(): string {
-  const date = new Date()
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const random = Math.floor(Math.random() * 1000)
-    .toString()
-    .padStart(3, '0')
-
-  return `ORD-${year}${month}${day}-${random}`
+// Generate unique order ID using UUID v4 (completely random)
+export function generateOrderId(): string {
+  return uuidv4()
 }
 
-// Format: order_{timestamp}_{randomString}
-export function generateOrderId(): string {
-  const timestamp = Date.now()
-  const randomString = Math.random()
-    .toString(BASE36_RADIX)
-    .slice(RANDOM_ID_START, RANDOM_ID_START + RANDOM_ID_LENGTH)
-  return `order_${timestamp}_${randomString}`
+// Generate sortable order number using UUID v7 (timestamp-based)
+// Format: ORD-{first 12 chars of UUID v7}
+export function generateOrderNumber(): string {
+  const uuid = uuidv7()
+  const shortId = uuid.substring(0, 13).toUpperCase() // First 12 chars + hyphen
+  return `ORD-${shortId}`
 }
 
 export function calculateOrderItemTotals(item: {
@@ -66,5 +54,5 @@ export function calculateOrderTotals(
     tax: isNaN(tax) ? 0 : Math.round(tax * 100) / 100,
     total: isNaN(total) ? 0 : Math.round(total * 100) / 100,
     currency,
-  }
+  };
 }

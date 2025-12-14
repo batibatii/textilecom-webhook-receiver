@@ -58,6 +58,7 @@
     "pino": "^8.19.0",
     "resend": "^6.5.2",
     "stripe": "^20.0.0",
+    "uuid": "^13.0.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -69,6 +70,7 @@
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.30",
     "@types/supertest": "^6.0.2",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
     "@typescript-eslint/parser": "^7.3.1",
     "eslint": "^8.57.0",
