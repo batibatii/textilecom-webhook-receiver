@@ -4,13 +4,12 @@ import type { Request, Response } from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import compression from 'compression'
-import unknownEndpoint from './middlewares/unknownEndpoint'
-import errorHandler from './middlewares/errorHandler'
+import unknownEndpoint from './middleware/unknownEndpoint'
+import errorHandler from './middleware/errorHandler'
 import webHooksController from '../src/resources/stripe/webhooks/controller'
 
 const app = express()
 
-// middleware
 app.disable('x-powered-by')
 app.use(cors())
 app.use(helmet())
@@ -27,7 +26,6 @@ app.post('/v1/stripe/webhooks', express.raw({ type: 'application/json' }), webHo
 
 app.use(express.json())
 
-// health check
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({
     'health-check': 'This is working!',
@@ -36,7 +34,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('*', unknownEndpoint)
 
-// Global error handler - must be last
+// Global error handler
 app.use(errorHandler)
 
 export default app

@@ -1,24 +1,18 @@
 export function formatCurrency(amount: number, currency: string): string {
-  const currencySymbols: Record<string, string> = {
-    USD: '$',
-    EUR: '€',
-    TRY: '₺',
-  }
-
-  const symbol = currencySymbols[currency.toUpperCase()] || currency
-
-  return `${symbol}${amount.toFixed(2)}`
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency.toUpperCase(),
+  }).format(amount)
 }
 
-// Format ISO date string for display
 export function formatDate(isoDate: string): string {
   const date = new Date(isoDate)
 
-  return date.toLocaleDateString('en-US', {
+  return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  })
+  }).format(date)
 }
 
 // Format address object as HTML string

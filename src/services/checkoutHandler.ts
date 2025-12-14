@@ -1,7 +1,8 @@
 import Stripe from 'stripe'
 import { stripe } from './stripe'
 import { createOrder, getOrderByStripeSessionId } from './orders'
-import { Order, OrderItem } from '../types/orderValidation'
+import { Order, OrderItem, CustomerInfo } from '../types/orderValidation'
+import type { StripeCheckoutSession } from '../types/stripeValidation'
 import { generateOrderNumber } from '../utils/orderHelpers'
 import { calculateOrderItemTotals, calculateOrderTotals, generateOrderId } from '../utils/orderHelpers'
 import { decrementMultipleProductsStock } from './products'
@@ -9,16 +10,7 @@ import { deleteCart } from './cart'
 import { sendOrderConfirmationEmail } from './email/templates/orderConfirmation'
 import logger from '../common/logger'
 
-export async function handleCheckoutSessionCompleted(session: {
-  id: string
-  payment_intent?: string | null
-  customer_email?: string | null
-  metadata: {
-    userId: string
-    orderItemCount?: string
-    cartItems?: string
-  }
-}): Promise<void> {
+export async function handleCheckoutSessionCompleted(session: StripeCheckoutSession): Promise<void> {
   try {
     // Check for idempotency - prevent duplicate order creation
     const existingOrder = await getOrderByStripeSessionId(session.id)
@@ -132,7 +124,7 @@ export async function handleCheckoutSessionCompleted(session: {
       )
     }
 
-    const customerInfo: any = {
+    const customerInfo: CustomerInfo = {
       email: session.customer_email || fullSession.customer_details?.email || '',
     }
 
@@ -185,7 +177,6 @@ export async function handleCheckoutSessionCompleted(session: {
       paymentCompletedAt: now,
     }
 
-    // Create order in Firestore
     await createOrder(order)
 
     const stockUpdates = orderItems.map((item) => ({
@@ -197,13 +188,15 @@ export async function handleCheckoutSessionCompleted(session: {
 
     await deleteCart(session.metadata.userId)
 
-    // Send order confirmation email
     try {
       await sendOrderConfirmationEmail({ order })
       logger.info({ orderId: order.id, email: order.customerInfo.email }, 'Order confirmation email sent successfully')
     } catch (emailError) {
       // Log error but don't fail the order creation
-      logger.error({ err: emailError, orderId: order.id, email: order.customerInfo.email }, 'Failed to send order confirmation email')
+      logger.error(
+        { err: emailError, orderId: order.id, email: order.customerInfo.email },
+        'Failed to send order confirmation email',
+      )
     }
 
     logger.info(
