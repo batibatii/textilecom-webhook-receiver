@@ -54,5 +54,5 @@ export function calculateOrderTotals(
     tax: isNaN(tax) ? 0 : Math.round(tax * 100) / 100,
     total: isNaN(total) ? 0 : Math.round(total * 100) / 100,
     currency,
-  }
+  };
 }
