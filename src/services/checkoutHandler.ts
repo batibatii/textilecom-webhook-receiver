@@ -8,6 +8,7 @@ import { calculateOrderItemTotals, calculateOrderTotals, generateOrderId } from 
 import { decrementMultipleProductsStock } from './products'
 import { deleteCart } from './cart'
 import { sendOrderConfirmationEmail } from './email/templates/orderConfirmation'
+import { getNextOrderCounter } from './orderCounter'
 import logger from '../common/logger'
 
 export async function handleCheckoutSessionCompleted(session: StripeCheckoutSession): Promise<void> {
@@ -158,7 +159,8 @@ export async function handleCheckoutSessionCompleted(session: StripeCheckoutSess
       }
     }
 
-    const orderNumber = generateOrderNumber()
+    const orderCounter = await getNextOrderCounter()
+    const orderNumber = generateOrderNumber(orderCounter)
     const orderId = generateOrderId()
     const now = new Date().toISOString()
 

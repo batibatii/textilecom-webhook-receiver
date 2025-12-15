@@ -1,16 +1,17 @@
-import { v4 as uuidv4, v7 as uuidv7 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 // Generate unique order ID using UUID v4 (completely random)
 export function generateOrderId(): string {
   return uuidv4()
 }
 
-// Generate sortable order number using UUID v7 (timestamp-based)
-// Format: ORD-{first 12 chars of UUID v7}
-export function generateOrderNumber(): string {
-  const uuid = uuidv7()
-  const shortId = uuid.substring(0, 13).toUpperCase() // First 12 chars + hyphen
-  return `ORD-${shortId}`
+// Generate order number with UUID v4 and counter for uniqueness and sortability
+// Format: ORD-{UUID v4}-{counter}
+// Counter allows chronological sorting, UUID ensures uniqueness
+export function generateOrderNumber(counter: number): string {
+  const uuid = uuidv4()
+  const paddedCounter = counter.toString().padStart(6, '0') // 6-digit counter
+  return `ORD-${uuid}-${paddedCounter}`
 }
 
 export function calculateOrderItemTotals(item: {
