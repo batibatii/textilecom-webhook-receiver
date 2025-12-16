@@ -114,14 +114,21 @@ export async function handleCheckoutSessionCompleted(session: StripeCheckoutSess
     const paidAmount = (fullSession.amount_total || 0) / 100
     const calculatedTotal = orderTotals.total
 
+    // Validate payment amount matches calculated total (allow 1 cent rounding difference)
     if (Math.abs(paidAmount - calculatedTotal) > 0.01) {
-      logger.warn(
+      logger.error(
         {
+          sessionId: session.id,
           paidAmount,
           calculatedTotal,
           difference: paidAmount - calculatedTotal,
         },
-        'Payment amount mismatch - possible rounding difference',
+        'CRITICAL: Payment amount mismatch - rejecting order',
+      )
+
+      // Do NOT create order - payment validation failed
+      throw new Error(
+        `Payment validation failed: paid $${paidAmount} but calculated $${calculatedTotal}`,
       )
     }
 

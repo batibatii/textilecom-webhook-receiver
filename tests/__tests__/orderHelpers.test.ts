@@ -1,10 +1,14 @@
 // Mock uuid before importing orderHelpers
 jest.mock('uuid', () => ({
-  v4: jest.fn(() => 'test-uuid-v4'),
-  v7: jest.fn(() => 'test-uuid-v7'),
+  v4: jest.fn(() => 'a1b2c3d4-e5f6-4789-g0h1-i2j3k4l5m6n7'),
 }))
 
-import { calculateOrderItemTotals, calculateOrderTotals } from '../../src/utils/orderHelpers'
+import {
+  calculateOrderItemTotals,
+  calculateOrderTotals,
+  generateOrderNumber,
+  generateOrderId,
+} from '../../src/utils/orderHelpers'
 
 describe('calculateOrderItemTotals', () => {
   describe('basic calculations without discount or tax', () => {
@@ -588,6 +592,113 @@ describe('calculateOrderTotals', () => {
         total: 144.0,
         currency: 'USD',
       })
+    })
+  })
+})
+
+describe('generateOrderId', () => {
+  it('should generate a UUID v4', () => {
+    const orderId = generateOrderId()
+    expect(orderId).toBe('a1b2c3d4-e5f6-4789-g0h1-i2j3k4l5m6n7')
+  })
+})
+
+describe('generateOrderNumber', () => {
+  describe('valid counter values', () => {
+    it('should generate order number with counter 1', () => {
+      const orderNumber = generateOrderNumber(1)
+      expect(orderNumber).toBe('ORD-000001-A1B2C3D4')
+    })
+
+    it('should generate order number with counter 100', () => {
+      const orderNumber = generateOrderNumber(100)
+      expect(orderNumber).toBe('ORD-000100-A1B2C3D4')
+    })
+
+    it('should generate order number with counter 999999 (max value)', () => {
+      const orderNumber = generateOrderNumber(999999)
+      expect(orderNumber).toBe('ORD-999999-A1B2C3D4')
+    })
+
+    it('should pad counter with leading zeros', () => {
+      expect(generateOrderNumber(1)).toBe('ORD-000001-A1B2C3D4')
+      expect(generateOrderNumber(42)).toBe('ORD-000042-A1B2C3D4')
+      expect(generateOrderNumber(1234)).toBe('ORD-001234-A1B2C3D4')
+    })
+
+    it('should use first 8 characters of UUID in uppercase', () => {
+      const orderNumber = generateOrderNumber(1)
+      // UUID is 'a1b2c3d4-e5f6-4789-g0h1-i2j3k4l5m6n7'
+      // First 8 chars: 'a1b2c3d4'
+      // Uppercase: 'A1B2C3D4'
+      expect(orderNumber).toContain('A1B2C3D4')
+    })
+
+    it('should have format ORD-NNNNNN-XXXXXXXX (19 characters total)', () => {
+      const orderNumber = generateOrderNumber(123)
+      expect(orderNumber).toHaveLength(19)
+      expect(orderNumber).toMatch(/^ORD-\d{6}-[A-Z0-9]{8}$/)
+    })
+  })
+
+  describe('sortability', () => {
+    it('should sort order numbers chronologically by counter', () => {
+      const order1 = generateOrderNumber(1)
+      const order2 = generateOrderNumber(2)
+      const order3 = generateOrderNumber(100)
+      const order4 = generateOrderNumber(999)
+
+      const orderNumbers = [order4, order2, order1, order3]
+      const sorted = orderNumbers.sort()
+
+      expect(sorted).toEqual([order1, order2, order3, order4])
+    })
+
+    it('should sort correctly with different counters', () => {
+      const orders = [
+        generateOrderNumber(500),
+        generateOrderNumber(1),
+        generateOrderNumber(999999),
+        generateOrderNumber(50),
+        generateOrderNumber(5000),
+      ]
+
+      const sorted = [...orders].sort()
+
+      expect(sorted[0]).toContain('000001')
+      expect(sorted[1]).toContain('000050')
+      expect(sorted[2]).toContain('000500')
+      expect(sorted[3]).toContain('005000')
+      expect(sorted[4]).toContain('999999')
+    })
+  })
+
+  describe('invalid counter values', () => {
+    it('should throw error for counter value 0', () => {
+      expect(() => generateOrderNumber(0)).toThrow('Must be a positive integer (>= 1)')
+    })
+
+    it('should throw error for negative counter values', () => {
+      expect(() => generateOrderNumber(-1)).toThrow('Must be a positive integer (>= 1)')
+      expect(() => generateOrderNumber(-100)).toThrow('Must be a positive integer (>= 1)')
+    })
+
+    it('should throw error for counter exceeding maximum (999999)', () => {
+      expect(() => generateOrderNumber(1000000)).toThrow('exceeds maximum value of 999,999')
+      expect(() => generateOrderNumber(9999999)).toThrow('exceeds maximum value of 999,999')
+    })
+
+    it('should throw error for non-integer counter values', () => {
+      expect(() => generateOrderNumber(1.5)).toThrow('Must be an integer')
+      expect(() => generateOrderNumber(100.1)).toThrow('Must be an integer')
+    })
+
+    it('should throw error for NaN', () => {
+      expect(() => generateOrderNumber(NaN)).toThrow('Must be an integer')
+    })
+
+    it('should throw error for Infinity', () => {
+      expect(() => generateOrderNumber(Infinity)).toThrow('Must be an integer')
     })
   })
 })

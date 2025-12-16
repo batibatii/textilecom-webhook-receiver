@@ -5,13 +5,25 @@ export function generateOrderId(): string {
   return uuidv4()
 }
 
-// Generate order number with UUID v4 and counter for uniqueness and sortability
-// Format: ORD-{UUID v4}-{counter}
-// Counter allows chronological sorting, UUID ensures uniqueness
+// Format: ORD-{counter}-{short UUID}
+// Example: ORD-000001-A1B2C3D4
 export function generateOrderNumber(counter: number): string {
+  if (!Number.isInteger(counter)) {
+    throw new Error(`Invalid counter: ${counter}. Must be an integer.`)
+  }
+  if (counter < 1) {
+    throw new Error(`Invalid counter: ${counter}. Must be a positive integer (>= 1).`)
+  }
+  if (counter > 999999) {
+    throw new Error(`Counter ${counter} exceeds maximum value of 999,999.`)
+  }
+
   const uuid = uuidv4()
+  const shortUuid = uuid.substring(0, 8).toUpperCase() // First 8 chars for brevity
   const paddedCounter = counter.toString().padStart(6, '0') // 6-digit counter
-  return `ORD-${uuid}-${paddedCounter}`
+
+  // Counter first for sortability
+  return `ORD-${paddedCounter}-${shortUuid}`
 }
 
 export function calculateOrderItemTotals(item: {
@@ -55,5 +67,5 @@ export function calculateOrderTotals(
     tax: isNaN(tax) ? 0 : Math.round(tax * 100) / 100,
     total: isNaN(total) ? 0 : Math.round(total * 100) / 100,
     currency,
-  };
+  }
 }

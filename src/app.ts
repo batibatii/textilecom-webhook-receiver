@@ -6,11 +6,15 @@ import helmet from 'helmet'
 import compression from 'compression'
 import unknownEndpoint from './middleware/unknownEndpoint'
 import errorHandler from './middleware/errorHandler'
+import { requestIdMiddleware } from './middleware/requestId'
 import webHooksController from '../src/resources/stripe/webhooks/controller'
 
 const app = express()
 
 app.disable('x-powered-by')
+
+app.use(requestIdMiddleware)
+
 app.use(cors())
 app.use(helmet())
 app.use(compression())
