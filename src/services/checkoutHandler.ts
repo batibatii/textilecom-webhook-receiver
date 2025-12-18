@@ -10,6 +10,7 @@ import { deleteCart } from './cart'
 import { sendOrderConfirmationEmail } from './email/templates/orderConfirmation'
 import { getNextOrderCounter } from './orderCounter'
 import logger from '../common/logger'
+import { getDb } from '../config/firebase'
 
 export async function handleCheckoutSessionCompleted(session: StripeCheckoutSession): Promise<void> {
   try {
@@ -31,9 +32,36 @@ export async function handleCheckoutSessionCompleted(session: StripeCheckoutSess
       throw new Error('No line items found in checkout session')
     }
 
-    // Parse cart items from session metadata to get size information
+    // Fetch cart items from Firestore to get size information
     let cartItemsMap: Map<string, { size?: string }> = new Map()
-    if (session.metadata.cartItems) {
+    if (session.metadata.checkoutSessionId) {
+      try {
+        const db = getDb()
+        const checkoutSessionDoc = await db
+          .collection('checkout_sessions')
+          .doc(session.metadata.checkoutSessionId)
+          .get()
+
+        if (checkoutSessionDoc.exists) {
+          const data = checkoutSessionDoc.data()
+          const cartItems = data?.items || []
+          cartItems.forEach((item: { productId: string; size?: string; stripePriceId: string }) => {
+            cartItemsMap.set(item.stripePriceId, { size: item.size })
+          })
+
+          // Delete the checkout session document after processing
+          await db.collection('checkout_sessions').doc(session.metadata.checkoutSessionId).delete()
+        } else {
+          logger.warn(
+            { checkoutSessionId: session.metadata.checkoutSessionId },
+            'Checkout session document not found in Firestore'
+          )
+        }
+      } catch (error) {
+        logger.warn({ error }, 'Failed to fetch checkout session from Firestore')
+      }
+    } else if (session.metadata.cartItems) {
+      // Fallback for old sessions that still have cartItems in metadata
       try {
         const cartItems = JSON.parse(session.metadata.cartItems)
         cartItems.forEach((item: { productId: string; size?: string; stripePriceId: string }) => {
