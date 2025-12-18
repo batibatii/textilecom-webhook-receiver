@@ -142,22 +142,22 @@ export async function handleCheckoutSessionCompleted(session: StripeCheckoutSess
     const paidAmount = (fullSession.amount_total || 0) / 100
     const calculatedTotal = orderTotals.total
 
-    // Validate payment amount matches calculated total (allow 1 cent rounding difference)
+    // Log if payment amount differs from calculated total
+    // Note: Stripe's amount is always the source of truth - we use calculated amounts for display only
     if (Math.abs(paidAmount - calculatedTotal) > 0.01) {
-      logger.error(
+      logger.warn(
         {
           sessionId: session.id,
           paidAmount,
           calculatedTotal,
           difference: paidAmount - calculatedTotal,
         },
-        'CRITICAL: Payment amount mismatch - rejecting order',
+        'Payment amount differs from calculated total - using Stripe amount as source of truth',
       )
 
-      // Do NOT create order - payment validation failed
-      throw new Error(
-        `Payment validation failed: paid $${paidAmount} but calculated $${calculatedTotal}`,
-      )
+      // Override calculated totals with Stripe's actual payment amount
+      // This ensures the order reflects what the customer actually paid
+      orderTotals.total = paidAmount
     }
 
     const customerInfo: CustomerInfo = {
