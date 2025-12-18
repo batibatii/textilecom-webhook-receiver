@@ -11,6 +11,7 @@ export const StripeCheckoutSessionSchema = z.object({
   metadata: z.object({
     userId: z.string(),
     orderItemCount: z.string().optional(),
+    cartItems: z.string().optional(), // JSON stringified cart items (deprecated - use checkoutSessionId)
     checkoutSessionId: z.string().optional(), // Firestore document ID for checkout session data
   }),
 })
