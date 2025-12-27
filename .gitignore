@@ -15,3 +15,4 @@ build/Release
 # Markdown files - except README.md
 *.md
 !README.md
+!ARCHITECTURE.md
