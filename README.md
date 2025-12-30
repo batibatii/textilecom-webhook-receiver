@@ -33,6 +33,7 @@ This backend demonstrates understanding of **separation of concerns** and **micr
 ✅ **Payment Validation** - Amount verification prevents price manipulation attacks
 ✅ **Graceful Degradation** - Email failures don't block order completion
 ✅ **Request Correlation** - UUID-based request tracking across distributed logs
+✅ **Comprehensive Performance Monitoring** - Automatic timing measurement at request, operation, and transaction levels
 ✅ **Sub-500ms Response Times** - Fast webhook acknowledgment prevents Stripe timeouts
 
 ---
@@ -481,11 +482,64 @@ const sessionSchema = z.object({
 
 ## 📈 Performance & Monitoring
 
-### Response Time Targets
+### Response Time Measurement & Targets
 
-- **Webhook Acknowledgment:** < 500ms (prevents Stripe timeout)
-- **Order Creation:** < 2 seconds (end-to-end processing)
-- **Stock Update Transaction:** < 100ms (Firestore optimization)
+The service **automatically measures and logs** all operation timings with millisecond precision:
+
+- **Webhook Acknowledgment:** < 500ms target (Stripe timeout prevention)
+- **Order Creation:** < 2 seconds target (end-to-end processing)
+- **Stock Update Transaction:** < 100ms target (Firestore optimization)
+
+#### Request-Level Timing
+
+Every HTTP request is instrumented via middleware (src/middleware/requestId.ts:17-30):
+
+```json
+{
+  "level": "info",
+  "requestId": "a1b2c3d4-5678-90ef",
+  "duration": 387,
+  "method": "POST",
+  "path": "/v1/stripe/webhooks",
+  "statusCode": 200,
+  "msg": "Request completed in 387ms"
+}
+```
+
+#### Operation-Level Breakdown
+
+Checkout processing logs detailed performance metrics (src/services/checkoutHandler.ts:259-275):
+
+```json
+{
+  "orderId": "ORD-000042-A1B2C3D4",
+  "orderNumber": "ORD-000042-A1B2C3D4",
+  "userId": "user123",
+  "total": 99.99,
+  "currency": "USD",
+  "itemCount": 3,
+  "performance": {
+    "totalDuration": 1243,
+    "orderCreation": 145,
+    "stockDecrement": 78,
+    "cartClear": 56
+  },
+  "msg": "Checkout session processed successfully in 1243ms (order: 145ms, stock: 78ms, cart: 56ms)"
+}
+```
+
+#### Transaction-Level Timing
+
+Firestore stock transactions are measured individually (src/services/products.ts:66-75):
+
+```json
+{
+  "itemCount": 3,
+  "transactionDuration": 67,
+  "productIds": ["prod_123", "prod_456", "prod_789"],
+  "msg": "Successfully decremented stock for all products in 67ms"
+}
+```
 
 ### Logging & Observability
 
@@ -512,11 +566,12 @@ const sessionSchema = z.object({
 
 ### Metrics Tracked
 
-- ✅ Webhook processing time
-- ✅ Order creation success rate
-- ✅ Stock update transaction duration
-- ✅ Email delivery success rate
-- ✅ Idempotency cache hit rate
+- ✅ **Webhook processing time** - Total request duration from receipt to response
+- ✅ **Order creation duration** - Time to write order document to Firestore
+- ✅ **Stock transaction duration** - Atomic stock decrement operation time
+- ✅ **Cart cleanup duration** - Time to delete user's cart after order
+- ✅ **Email delivery duration** - Time to send order confirmation via Resend
+- ✅ **Request correlation** - UUID-based request tracking across all logs
 
 ---
 

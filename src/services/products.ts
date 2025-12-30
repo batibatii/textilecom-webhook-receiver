@@ -10,6 +10,7 @@ export async function decrementMultipleProductsStock(
   items: Array<{ productId: string; quantity: number }>,
 ): Promise<void> {
   const db = getDb()
+  const transactionStartTime = Date.now()
 
   try {
     await db.runTransaction(async (transaction) => {
@@ -62,7 +63,16 @@ export async function decrementMultipleProductsStock(
       }
     })
 
-    logger.info({ itemCount: items.length }, 'Successfully decremented stock for all products')
+    const transactionDuration = Date.now() - transactionStartTime
+
+    logger.info(
+      {
+        itemCount: items.length,
+        transactionDuration,
+        productIds: items.map((i) => i.productId),
+      },
+      `Successfully decremented stock for all products in ${transactionDuration}ms`,
+    )
   } catch (error) {
     logger.error({ err: error, itemCount: items.length }, 'Failed to decrement multiple products stock')
     throw error

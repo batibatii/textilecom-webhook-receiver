@@ -13,6 +13,8 @@ import logger from '../common/logger'
 import { getDb } from '../config/firebase'
 
 export async function handleCheckoutSessionCompleted(session: StripeCheckoutSession): Promise<void> {
+  const operationStartTime = Date.now()
+
   try {
     // Check for idempotency - prevent duplicate order creation
     const existingOrder = await getOrderByStripeSessionId(session.id)
@@ -33,7 +35,7 @@ export async function handleCheckoutSessionCompleted(session: StripeCheckoutSess
     }
 
     // Fetch cart items from Firestore to get size information
-    let cartItemsMap: Map<string, { size?: string }> = new Map()
+    const cartItemsMap: Map<string, { size?: string }> = new Map()
     if (session.metadata.checkoutSessionId) {
       try {
         const db = getDb()
@@ -54,7 +56,7 @@ export async function handleCheckoutSessionCompleted(session: StripeCheckoutSess
         } else {
           logger.warn(
             { checkoutSessionId: session.metadata.checkoutSessionId },
-            'Checkout session document not found in Firestore'
+            'Checkout session document not found in Firestore',
           )
         }
       } catch (error) {
@@ -214,27 +216,45 @@ export async function handleCheckoutSessionCompleted(session: StripeCheckoutSess
       paymentCompletedAt: now,
     }
 
+    // Create order with timing
+    const orderCreationStart = Date.now()
     await createOrder(order)
+    const orderCreationDuration = Date.now() - orderCreationStart
 
+    // Decrement stock with timing
     const stockUpdates = orderItems.map((item) => ({
       productId: item.productId,
       quantity: item.quantity,
     }))
 
+    const stockDecrementStart = Date.now()
     await decrementMultipleProductsStock(stockUpdates)
+    const stockDecrementDuration = Date.now() - stockDecrementStart
 
+    // Clear cart with timing
+    const cartClearStart = Date.now()
     await deleteCart(session.metadata.userId)
+    const cartClearDuration = Date.now() - cartClearStart
 
+    // Send email with timing
+    const emailStart = Date.now()
     try {
       await sendOrderConfirmationEmail({ order })
-      logger.info({ orderId: order.id, email: order.customerInfo.email }, 'Order confirmation email sent successfully')
+      const emailDuration = Date.now() - emailStart
+      logger.info(
+        { orderId: order.id, email: order.customerInfo.email, duration: emailDuration },
+        'Order confirmation email sent successfully',
+      )
     } catch (emailError) {
+      const emailDuration = Date.now() - emailStart
       // Log error but don't fail the order creation
       logger.error(
-        { err: emailError, orderId: order.id, email: order.customerInfo.email },
+        { err: emailError, orderId: order.id, email: order.customerInfo.email, duration: emailDuration },
         'Failed to send order confirmation email',
       )
     }
+
+    const totalDuration = Date.now() - operationStartTime
 
     logger.info(
       {
@@ -244,8 +264,14 @@ export async function handleCheckoutSessionCompleted(session: StripeCheckoutSess
         total: orderTotals.total,
         currency: orderTotals.currency,
         itemCount: orderItems.length,
+        performance: {
+          totalDuration,
+          orderCreation: orderCreationDuration,
+          stockDecrement: stockDecrementDuration,
+          cartClear: cartClearDuration,
+        },
       },
-      'Checkout session processed successfully - order created, stock decremented, cart cleared, and email sent',
+      `Checkout session processed successfully in ${totalDuration}ms (order: ${orderCreationDuration}ms, stock: ${stockDecrementDuration}ms, cart: ${cartClearDuration}ms)`,
     )
   } catch (error) {
     logger.error({ err: error, sessionId: session.id }, 'Failed to handle checkout session')
