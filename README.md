@@ -6,7 +6,11 @@
 [![Express.js](https://img.shields.io/badge/Express.js-4.19.2-green)](https://expressjs.com/)
 [![Stripe](https://img.shields.io/badge/Stripe-20.0.0-purple)](https://stripe.com/)
 [![Firebase](https://img.shields.io/badge/Firebase-13.6.0-orange)](https://firebase.google.com/)
+![CI Pipeline](https://github.com/batibatii/textilecom-webhook-receiver/actions/workflows/api.test.yml/badge.svg)
+![CodeQL](https://github.com/batibatii/textilecom-webhook-receiver/actions/workflows/codeql-analysis.yml/badge.svg)
+![Security Audit](https://github.com/batibatii/textilecom-webhook-receiver/actions/workflows/dependency-audit.yml/badge.svg)
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://vercel.com)
+
 
 **[Live API](https://textilecom-webhook-receiver.vercel.app) | [Architecture Docs](./ARCHITECTURE.md) | [Frontend Repo](https://github.com/batibatii/textilecom) | 
 
@@ -35,6 +39,7 @@ This backend demonstrates understanding of **separation of concerns** and **micr
 ✅ **Request Correlation** - UUID-based request tracking across distributed logs
 ✅ **Comprehensive Performance Monitoring** - Automatic timing measurement at request, operation, and transaction levels
 ✅ **Sub-500ms Response Times** - Fast webhook acknowledgment prevents Stripe timeouts
+✅ **Automated CI/CD Pipeline** - GitHub Actions for testing, security scanning, and quality gates
 
 ---
 
@@ -316,6 +321,15 @@ stripe trigger checkout.session.completed
 
 ```
 textilecom-express/
+├── .github/
+│   └── workflows/                  # CI/CD Pipelines
+│       ├── api.test.yml            # CI pipeline (lint, test, build)
+│       ├── codeql-analysis.yml     # Security code scanning
+│       └── dependency-audit.yml    # Dependency vulnerability checks
+│
+├── api/
+│   └── index.ts                    # Vercel serverless entry point
+│
 ├── src/
 │   ├── app.ts                      # Express app initialization
 │   ├── server.ts                   # Server entry point
@@ -395,6 +409,75 @@ npm run test -- --watch
 
 ```bash
 npm run test-coverage
+```
+
+---
+
+## 🔄 CI/CD Pipeline
+
+This project uses **GitHub Actions** for automated testing, security scanning, and quality assurance.
+
+### Automated Workflows
+
+#### 1. CI Pipeline (`api.test.yml`)
+
+Runs on every push and pull request to `main`:
+
+✅ **Multi-Version Testing** - Tests on Node.js 18.x, 20.x, and 22.x
+✅ **Code Quality** - ESLint linting
+✅ **Type Safety** - TypeScript type checking (`tsc --noEmit`)
+✅ **Test Coverage** - Jest tests with coverage reports
+✅ **Build Verification** - Ensures project builds successfully
+
+```yaml
+Triggers: Push to main, Pull requests
+Runs on: Ubuntu latest
+Node versions: 18.x, 20.x, 22.x
+Artifacts: Coverage reports (30-day retention)
+```
+
+#### 2. CodeQL Security Analysis (`codeql-analysis.yml`)
+
+GitHub's advanced security scanning for vulnerabilities:
+
+🔒 **Static Analysis** - Detects security vulnerabilities in code
+🔒 **Extended Queries** - Uses security-extended query pack
+🔒 **Scheduled Scans** - Weekly automated scans (Mondays at 6 AM UTC)
+🔒 **PR Checks** - Blocks PRs with security issues
+
+```yaml
+Triggers: Push to main, Pull requests, Weekly schedule
+Language: JavaScript/TypeScript
+Analysis: security-extended queries
+```
+
+#### 3. Dependency Security Audit (`dependency-audit.yml`)
+
+Automated npm dependency vulnerability checks:
+
+🛡️ **Production Audit** - High-severity vulnerability detection
+🛡️ **Development Audit** - Moderate-severity checks (non-blocking)
+🛡️ **Outdated Dependencies** - Reports available updates
+🛡️ **PR Comments** - Automatic failure notifications on pull requests
+🛡️ **Scheduled Scans** - Weekly automated checks (Sundays at 3 AM UTC)
+
+```yaml
+Triggers: Push to main, Pull requests, Weekly schedule, Manual dispatch
+Audit levels: High (production), Moderate (dev)
+Notifications: Automatic PR comments on failures
+```
+
+### Running CI Checks Locally
+
+Before pushing code, run the same checks locally:
+
+```bash
+# Run all CI checks
+npm run lint                  # ESLint
+npx tsc --noEmit             # TypeScript type check
+npm run test-coverage        # Tests with coverage
+npm run build                # Build verification
+npm audit --production --audit-level=high  # Security audit
 ```
 
 ---
@@ -626,6 +709,7 @@ This project demonstrates proficiency in:
 ### Production-Ready Code
 - ✅ **Testing** - Jest unit tests with >85% coverage
 - ✅ **Code Quality** - ESLint + Prettier + Husky pre-commit hooks
+- ✅ **CI/CD Pipeline** - Automated testing, security scanning, and dependency audits with GitHub Actions
 - ✅ **Documentation** - Comprehensive README, architecture docs, API reference
 - ✅ **Deployment** - Serverless deployment with zero-config Vercel
 
