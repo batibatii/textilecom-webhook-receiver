@@ -22,7 +22,7 @@ const PRODUCTION_ERROR_MESSAGES: Record<number, string> = {
   500: 'Internal Server Error',
 }
 
-const errorHandler = (err: CustomError, req: RequestWithId, res: Response, next: NextFunction) => {
+const errorHandler = (err: CustomError, req: RequestWithId, res: Response, _next: NextFunction) => {
   const requestId = req.id || generateRequestId()
 
   // Log full error details server-side (with stack trace)

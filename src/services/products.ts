@@ -1,5 +1,5 @@
 import { getDb } from '../config/firebase'
-import { FieldValue } from 'firebase-admin/firestore'
+import { FieldValue, type DocumentReference, type DocumentData } from 'firebase-admin/firestore'
 import logger from '../common/logger'
 
 /**
@@ -18,7 +18,7 @@ export async function decrementMultipleProductsStock(
       const productDocs = await Promise.all(productRefs.map((ref) => transaction.get(ref)))
 
       // Validate all products exist and have sufficient stock
-      const updates: Array<{ ref: any; productId: string; quantity: number; currentStock: number }> = []
+      const updates: Array<{ ref: DocumentReference; productId: string; quantity: number; currentStock: number }> = []
 
       for (let i = 0; i < items.length; i++) {
         const item = items[i]
@@ -79,7 +79,7 @@ export async function decrementMultipleProductsStock(
   }
 }
 
-export async function getProductById(productId: string): Promise<any | null> {
+export async function getProductById(productId: string): Promise<DocumentData | null> {
   try {
     const db = getDb()
     const productDoc = await db.collection('products').doc(productId).get()

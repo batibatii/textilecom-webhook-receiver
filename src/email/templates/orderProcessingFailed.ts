@@ -2,7 +2,7 @@ import { sendEmail, getEmailFrom } from '../emailService'
 import type { EmailResult, OrderProcessingFailedEmailData } from '../../types/emailTypes'
 
 function generateOrderProcessingFailedHTML(data: OrderProcessingFailedEmailData): string {
-  const { customerEmail, sessionId, errorDetails } = data
+  const { sessionId } = data
 
   return `
 <!DOCTYPE html>
