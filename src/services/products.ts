@@ -88,7 +88,7 @@ export async function getProductById(productId: string): Promise<DocumentData | 
       return null
     }
 
-    return productDoc.data()
+    return productDoc.data() ?? null
   } catch (error) {
     logger.error({ err: error, productId }, 'Failed to get product')
     throw error
