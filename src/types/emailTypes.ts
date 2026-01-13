@@ -18,6 +18,12 @@ export interface AbandonedCartEmailData {
   currency?: string
 }
 
+export interface OrderProcessingFailedEmailData {
+  customerEmail: string
+  sessionId?: string
+  errorDetails?: string
+}
+
 export interface EmailConfig {
   from: string
   to: string

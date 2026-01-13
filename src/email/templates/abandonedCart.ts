@@ -1,6 +1,6 @@
 import { sendEmail, getEmailFrom } from '../emailService'
-import { formatCurrency } from '../../../utils/formatHelpers'
-import type { EmailResult, AbandonedCartEmailData } from '../../../types/emailTypes'
+import { formatCurrency } from '../../utils/formatHelpers'
+import type { EmailResult, AbandonedCartEmailData } from '../../types/emailTypes'
 
 function generateAbandonedCartHTML(data: AbandonedCartEmailData): string {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'

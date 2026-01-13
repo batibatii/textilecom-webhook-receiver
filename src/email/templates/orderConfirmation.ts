@@ -1,7 +1,7 @@
 import { sendEmail, getEmailFrom } from '../emailService'
-import { formatCurrency, formatDate, formatAddress } from '../../../utils/formatHelpers'
-import type { Order } from '../../../types/orderValidation'
-import type { EmailResult, OrderConfirmationEmailData } from '../../../types/emailTypes'
+import { formatCurrency, formatDate, formatAddress } from '../../utils/formatHelpers'
+import type { Order } from '../../types/orderValidation'
+import type { EmailResult, OrderConfirmationEmailData } from '../../types/emailTypes'
 
 function generateOrderConfirmationHTML(order: Order): string {
   const orderDate = formatDate(order.createdAt)

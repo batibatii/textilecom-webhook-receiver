@@ -1,6 +1,6 @@
 import { Resend } from 'resend'
-import logger from '../../common/logger'
-import type { EmailConfig, EmailResult } from '../../types/emailTypes'
+import logger from '../common/logger'
+import type { EmailConfig, EmailResult } from '../types/emailTypes'
 
 const resendApiKey = process.env.RESEND_API_KEY
 const emailFrom = process.env.EMAIL_FROM || 'onboarding@resend.dev'

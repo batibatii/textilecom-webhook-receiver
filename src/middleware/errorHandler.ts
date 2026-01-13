@@ -14,7 +14,6 @@ function generateRequestId(): string {
   return `req_${Date.now()}_${Math.random().toString(36).substring(7)}`
 }
 
-// Generic error messages for production
 const PRODUCTION_ERROR_MESSAGES: Record<number, string> = {
   400: 'Bad Request',
   401: 'Unauthorized',

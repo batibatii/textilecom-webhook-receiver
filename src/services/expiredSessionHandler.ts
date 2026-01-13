@@ -1,6 +1,6 @@
 import logger from '../common/logger'
 import type { StripeCheckoutSession } from '../types/stripeValidation'
-import { sendAbandonedCartEmail } from './email/templates/abandonedCart'
+import { sendAbandonedCartEmail } from '../email/templates/abandonedCart'
 
 export async function handleCheckoutSessionExpired(session: StripeCheckoutSession): Promise<void> {
   try {

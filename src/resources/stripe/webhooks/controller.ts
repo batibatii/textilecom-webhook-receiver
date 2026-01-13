@@ -1,16 +1,17 @@
 import { Request, Response, NextFunction } from 'express'
-import { stripe, endpointSecret } from '../../../services/stripe'
+import { stripe, endpointSecret } from '../../../config/stripe'
 import logger from '../../../common/logger'
 import { StripeCheckoutSessionSchema } from '../../../types/stripeValidation'
 import { ZodError } from 'zod'
 import { handleCheckoutSessionCompleted } from '../../../services/checkoutHandler'
 import { handleCheckoutSessionExpired } from '../../../services/expiredSessionHandler'
+import { sendOrderProcessingFailedEmail } from '../../../email/templates/orderProcessingFailed'
 
 const receiveUpdates = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!endpointSecret) {
       logger.error('STRIPE_WEBHOOK_SIGNING_SECRET is not configured')
-      return res.status(500).json({ error: 'Webhook configuration error' })
+      return res.status(500).json({ error: 'Internal Server Error' })
     }
 
     const signature = req.headers['stripe-signature']
@@ -90,6 +91,36 @@ const receiveUpdates = async (req: Request, res: Response, next: NextFunction) =
     } catch (err) {
       const error = err as Error
       logger.error({ err: error, eventType: event.type, eventId: event.id }, 'Error processing webhook event')
+
+      // Notify customer if checkout.session.completed failed (payment received but order processing failed)
+      if (event.type === 'checkout.session.completed') {
+        try {
+          const checkoutSession = event.data.object
+          const customerEmail =
+            ('customer_email' in checkoutSession && checkoutSession.customer_email) ||
+            ('customer_details' in checkoutSession &&
+              checkoutSession.customer_details &&
+              typeof checkoutSession.customer_details === 'object' &&
+              'email' in checkoutSession.customer_details &&
+              checkoutSession.customer_details.email) ||
+            undefined
+
+          if (customerEmail && typeof customerEmail === 'string') {
+            await sendOrderProcessingFailedEmail({
+              customerEmail,
+              sessionId: checkoutSession.id,
+              errorDetails: error.message,
+            })
+            logger.info({ customerEmail, sessionId: checkoutSession.id }, 'Sent order processing failure notification')
+          } else {
+            logger.warn({ sessionId: checkoutSession.id }, 'Cannot send failure notification - no customer email found')
+          }
+        } catch (emailError) {
+          // Don't fail the webhook response if email notification fails
+          logger.error({ err: emailError }, 'Failed to send order processing failure notification')
+        }
+      }
+
       // Still return 200 to acknowledge receipt, but log the processing error
       // Stripe will not retry if we return 200
       return res.status(200).json({ received: true, processed: false })
