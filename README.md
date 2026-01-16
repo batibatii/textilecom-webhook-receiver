@@ -1,6 +1,6 @@
 # TextileCom Express - Webhook Microservice
 
-> Production-ready Stripe webhook handler for e-commerce order processing, inventory management, and customer notifications
+> A Stripe webhook handler designed for e-commerce order processing, inventory management, and customer notifications, following production best practices
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4.3-blue)](https://www.typescriptlang.org/)
 [![Express.js](https://img.shields.io/badge/Express.js-4.19.2-green)](https://expressjs.com/)
@@ -32,14 +32,14 @@ This backend demonstrates understanding of **separation of concerns** and **micr
 
 ### Key Technical Achievements
 
-✅ **Idempotent Webhook Processing** - Prevents duplicate orders from Stripe retry attempts
-✅ **Atomic Stock Management** - Firestore transactions prevent race conditions in concurrent orders
-✅ **Payment Validation** - Amount verification prevents price manipulation attacks
-✅ **Graceful Degradation** - Email failures don't block order completion
-✅ **Request Correlation** - UUID-based request tracking across distributed logs
-✅ **Comprehensive Performance Monitoring** - Automatic timing measurement at request, operation, and transaction levels
-✅ **Sub-500ms Response Times** - Fast webhook acknowledgment prevents Stripe timeouts
-✅ **Automated CI/CD Pipeline** - GitHub Actions for testing, security scanning, and quality gates
+- ✅ **Idempotent Webhook Processing** - Prevents duplicate orders from Stripe retry attempts
+- ✅ **Atomic Stock Management** - Firestore transactions prevent race conditions in concurrent orders
+- ✅ **Payment Validation** - Amount verification prevents price manipulation attacks
+- ✅ **Graceful Degradation** - Email failures don't block order completion
+- ✅ **Request Correlation** - UUID-based request tracking across distributed logs
+- ✅ **Comprehensive Performance Monitoring** - Automatic timing measurement at request, operation, and transaction levels
+- ✅ **Sub-500ms Response Times** - Fast webhook acknowledgment prevents Stripe timeouts
+- ✅ **Automated CI/CD Pipeline** - GitHub Actions for testing, security scanning, and quality gates
 
 ---
 
@@ -706,7 +706,7 @@ This project demonstrates proficiency in:
 - ✅ **Observability** - Request correlation and structured logging
 - ✅ **Security** - Signature verification, environment validation, stack trace protection
 
-### Production-Ready Code
+### Production Best Practices
 - ✅ **Testing** - Jest unit tests with >85% coverage
 - ✅ **Code Quality** - ESLint + Prettier + Husky pre-commit hooks
 - ✅ **CI/CD Pipeline** - Automated testing, security scanning, and dependency audits with GitHub Actions
